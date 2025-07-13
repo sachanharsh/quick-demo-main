@@ -1,5 +1,10 @@
 pipeline {
-  agent any
+  agent {
+    docker {
+      image 'maven:3.8.8-openjdk-11'
+      args '-v $HOME/.m2:/root/.m2'
+    }
+  }
 
   stages {
     stage('Checkout') {
@@ -9,19 +14,15 @@ pipeline {
     }
     stage('Run Automation') {
       steps {
-        // ensure our script is executable
-        sh 'chmod +x run.sh'
-        // run the script
-        sh './run.sh'
+        // run directly with mvn (no mvnw needed)
+        sh 'mvn clean test -B'
       }
     }
   }
 
   post {
     always {
-      // publish TestNG or Surefire reports
       junit '**/target/surefire-reports/*.xml'
-      // archive any built jars
       archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
     }
   }
