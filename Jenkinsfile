@@ -1,5 +1,13 @@
 pipeline {
   agent any
+  
+    parameters {
+    string(
+      name: 'DUMMY',
+      defaultValue: 'hello-world',
+      description: 'A dummy parameter for demo'
+    )
+  }
 
   stages {
     stage('Checkout') {
